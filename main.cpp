@@ -1,6 +1,6 @@
 #include "matrix/include/led-matrix.h"
 #include "rotary/include/rotary.h"
-
+#include "ImageLib/Imageutils.cpp"
 
 #include <math.h>
 #include <signal.h>
@@ -25,9 +25,32 @@ static void InterruptHandler(int signo) {
 }
 
 
+static void UIManager(RGBMatrix* pm, rotaryButton* pRb)
+{
+	const char* filename = "images/burger.gif"; 
+	const char* filename2 = "images/Icecream.gif";
+	const char* filename3 = "images/Sunset.gif";
 
 
-static void ActivateInputThread(rotary* pRb)
+	ImageVector images = LoadImageAndScaleImage(filename, pm->width() , pm->height());
+ 	ImageVector images2 = LoadImageAndScaleImage(filename2, pm->width(), pm->height());
+	ImageVector images3 = LoadImageAndScaleImage(filename3, pm->width(), pm->height());
+
+
+	std::thread AnimatedImageThread(
+	ShowAnimatedImage, images, pm);
+		while(true)
+		{
+			pm->SetPixel(50, 30, pRb->getPosition() * 5.6, pRb->getPosition() * 1.07, pRb->getPosition() * 2.4);		
+		}
+
+	
+	AnimatedImageThread.join();
+	
+}
+
+
+static void ActivateInputThread(rotaryButton* pRb)
 {
 	pRb->automaticPosDetection(true);
 }
@@ -35,7 +58,7 @@ static void ActivateInputThread(rotary* pRb)
 
 int main(int argc, char* argv[])
 {
-	std::cout << "Test";
+	Magick::InitializeMagick(*argv);
 	
 	RGBMatrix::Options options;
 	rgb_matrix::RuntimeOptions runtime_opt;
@@ -43,16 +66,15 @@ int main(int argc, char* argv[])
 	options.cols = 64;
 	options.chain_length = 1;
 	options.pwm_bits = 11;
-	options.brightness = 100;
-	options.multiplexing = 1;
+	options.brightness = 80;
+	options.multiplexing = 0;
 	
 
-	RGBMatrix* matrix = RGBMatrix::CreateFromOptions(options, runtime_opt);
-	rotary* rb = rotaryButton("26", "20", "21");
+	RGBMatrix* matrix = RGBMatrix::CreateFromFlags(&argc, &argv, &options);
+	rotaryButton* rb = new rotaryButton("26", "21", "20");
 	if(matrix == NULL)
-		return usage(argv[0]);
+		return 0;
 
-	rgb_matrix::FrameCanvas* canvas = matrix->CreateFrameCanvas();
 	signal(SIGTERM, InterruptHandler);
   	signal(SIGINT, InterruptHandler);
 	
@@ -62,17 +84,7 @@ int main(int argc, char* argv[])
 	while(!interrupt_received && running)
 	{
 		std::thread InputThread(ActivateInputThread, rb);
-	
-			while(running)
-			{
-				canvas->Clear();
-	
-				rgb_matrix::Color blue = rgb_matrix::Color(255, 0, 0); 
-				canvas->SetPixels(10, 10, 20, 20, blue);			
-				int pos = rb->getPosition();
-
-				std::cout << pos << std::endl;
-			}
+			UIManager(matrix, rb);
 		InputThread.join();
 
 	}
