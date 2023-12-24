@@ -1,6 +1,6 @@
 #include "matrix/include/led-matrix.h"
-#include "rotary/include/rotary.h"
-#include "ImageLib/Imageutils.cpp"
+#include "matrix/include/graphics.h"
+#include "UIManager/UIManager.h"
 
 #include <math.h>
 #include <signal.h>
@@ -22,32 +22,9 @@ using rgb_matrix::FrameCanvas;
 volatile bool interrupt_received = false;
 static void InterruptHandler(int signo) {
   interrupt_received = true;
+
 }
 
-
-static void UIManager(RGBMatrix* pm, rotaryButton* pRb)
-{
-	const char* filename = "images/burger.gif"; 
-	const char* filename2 = "images/Icecream.gif";
-	const char* filename3 = "images/Sunset.gif";
-
-
-	ImageVector images = LoadImageAndScaleImage(filename, pm->width() , pm->height());
- 	ImageVector images2 = LoadImageAndScaleImage(filename2, pm->width(), pm->height());
-	ImageVector images3 = LoadImageAndScaleImage(filename3, pm->width(), pm->height());
-
-
-	std::thread AnimatedImageThread(
-	ShowAnimatedImage, images, pm);
-		while(true)
-		{
-			pm->SetPixel(50, 30, pRb->getPosition() * 5.6, pRb->getPosition() * 1.07, pRb->getPosition() * 2.4);		
-		}
-
-	
-	AnimatedImageThread.join();
-	
-}
 
 
 static void ActivateInputThread(rotaryButton* pRb)
@@ -75,16 +52,19 @@ int main(int argc, char* argv[])
 	if(matrix == NULL)
 		return 0;
 
+	UIManager um(matrix, rb);
+
 	signal(SIGTERM, InterruptHandler);
   	signal(SIGINT, InterruptHandler);
 	
 
+	rgb_matrix::Color turqois(0, 255, 255);
 	
 	bool running = true;
 	while(!interrupt_received && running)
 	{
 		std::thread InputThread(ActivateInputThread, rb);
-			UIManager(matrix, rb);
+			um.FirstView(0, turqois);
 		InputThread.join();
 
 	}
