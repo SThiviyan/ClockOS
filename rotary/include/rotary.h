@@ -1,10 +1,14 @@
+#pragma once
+
 #include <iostream>
 #include <string>
 #include "../../rotary/lib/GPIO.h"
 
+typedef void (*PressCallback)();
 
 class rotaryButton
 {
+
 
 	public:	
 
@@ -13,12 +17,15 @@ class rotaryButton
 
 	int getPosition();
 	void automaticPosDetection(bool On);
+	void SetPressCallback(PressCallback callback);
+
 
 	private:
 	std::string getCLKval();
 	std::string getDTval();
 	std::string getSWval();
-	
+
+	PressCallback Pcb;
 	
 	void determinePos();
 	bool autoPos;

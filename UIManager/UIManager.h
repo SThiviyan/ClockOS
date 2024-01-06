@@ -1,13 +1,16 @@
+#pragma once
+
 #include "../matrix/include/led-matrix.h"
-#include "../matrix/include/graphics.h"
 #include "../rotary/include/rotary.h"
 #include "../ImageLib/Imageutils.h"
+#include "../UtilLib/timeutils.h"
+#include "../matrix/include/graphics.h"
 
 #include <math.h>
 #include <signal.h>
 #include <stdio.h>
 #include <unistd.h>
-
+#include <iostream>
 
 #include <exception>
 #include <Magick++.h>
@@ -21,59 +24,18 @@ class UIManager
 {
         public:
 
-        UIManager(RGBMatrix *pm, rotaryButton* pRb){
-                this->m = pm;
-                this->rb = pRb;
+        UIManager(RGBMatrix *pm, rotaryButton* pRb);
 
-                this->standardOSFont.LoadFont("matrix/fonts/9x18.bdf");
-                this->staycurrentview=false;
+        ~UIManager();
+	
+	void runUI();
 
-                InitBackgrounds();
-        }
-
-        ~UIManager()
-        {
-                for(char* file: filenames_backgrounds)
-                        delete file;
-
-                delete m;
-                delete rb;
-        };
+        int FirstView(int pbackgroundindex, rgb_matrix::Color color, int* running);
 
 
+	private:
 
-
-        void FirstView(int pbackgroundindex, rgb_matrix::Color color)
-        {
-
-
-                int backgroundindex = pbackgroundindex;
-                if(backgroundindex > Backgrounds.size() - 1)
-                        backgroundindex = Backgrounds.size() - 1;
-
-
-                std::thread AnimatedImage(ShowAnimatedImage, Backgrounds[backgroundindex], m);
-                        while(true)
-                        {
-                                DrawText(this->m, this->standardOSFont, 3, 30, color, NULL, "22:22");
-                        }
-
-                AnimatedImage.join();
-
-        }
-
-
-        private:
-
-        void InitBackgrounds()
-        {
-                filenames_backgrounds.push_back("images/china_cropped_pixelated.gif");
-                filenames_backgrounds.push_back("Sunset.gif");
-
-                for(char* file: filenames_backgrounds)
-                        Backgrounds.push_back(LoadImageAndScaleImage(file, m->width(), m->height()));
-        }
-
+        void InitBackgrounds();
 
         RGBMatrix* m;
         rotaryButton* rb;

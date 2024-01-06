@@ -1,4 +1,7 @@
+#pragma once
+
 #include "../matrix/include/led-matrix.h"
+
 
 #include <math.h>
 #include <signal.h>
@@ -21,7 +24,7 @@ using ImageVector = std::vector<Magick::Image>;
 // Given the filename, load the image and scale to the size of the
 // matrix.
 // // If this is an animated image, the resutlting vector will contain multiple.
-static ImageVector LoadImageAndScaleImage(const char *filename,
+static inline ImageVector LoadImageAndScaleImage(const char *filename,
                                           int target_width,
                                           int target_height) {
   ImageVector result;
@@ -58,7 +61,7 @@ static ImageVector LoadImageAndScaleImage(const char *filename,
 // Copy an image to a Canvas. Note, the RGBMatrix is implementing the Canvas
 // interface as well as the FrameCanvas we use in the double-buffering of the
 // animted image.
-void CopyImageToCanvas(const Magick::Image &image, Canvas *canvas) {
+void inline CopyImageToCanvas(const Magick::Image &image, Canvas *canvas) {
   const int offset_x = 0, offset_y = 0;  // If you want to move the image.
   // Copy all the pixels to the canvas.
   for (size_t y = 0; y < image.rows(); ++y) {
@@ -76,16 +79,21 @@ void CopyImageToCanvas(const Magick::Image &image, Canvas *canvas) {
 
 // An animated image has to constantly swap to the next frame.
 // We're using double-buffering and fill an offscreen buffer first, then show.
-int ShowAnimatedImage(const ImageVector &images, RGBMatrix *matrix) {
+int inline ShowAnimatedImage(const ImageVector &images, RGBMatrix *matrix, int *running) {
  	
 	FrameCanvas* offscreen_canvas;
 
 
 	offscreen_canvas = matrix->CreateFrameCanvas();
 
-	while (true) {
+	while (*running == 1) {
    	 for (const auto &image : images) {
-      		if (false) break;
+      		if (*running == 0) 
+		{	
+			//delete offscreen_canvas;
+			matrix->Clear();
+			return -1;
+		}
       		CopyImageToCanvas(image, offscreen_canvas);
       		offscreen_canvas = matrix->SwapOnVSync(offscreen_canvas);
      		usleep(image.animationDelay() * 10000);  // 1/100s converted to usec
@@ -98,7 +106,7 @@ int ShowAnimatedImage(const ImageVector &images, RGBMatrix *matrix) {
 
 
   	return -1;
-}
 
+}
 
 

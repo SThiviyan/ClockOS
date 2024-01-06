@@ -43,9 +43,10 @@ int main(int argc, char* argv[])
 	options.cols = 64;
 	options.chain_length = 1;
 	options.pwm_bits = 11;
-	options.brightness = 80;
+	options.brightness = 100;
 	options.multiplexing = 0;
-	
+	options.disable_hardware_pulsing = true;
+
 
 	RGBMatrix* matrix = RGBMatrix::CreateFromFlags(&argc, &argv, &options);
 	rotaryButton* rb = new rotaryButton("26", "21", "20");
@@ -58,13 +59,18 @@ int main(int argc, char* argv[])
   	signal(SIGINT, InterruptHandler);
 	
 
-	rgb_matrix::Color turqois(0, 255, 255);
+	rgb_matrix::Color turqois(0, 0, 0);
 	
 	bool running = true;
 	while(!interrupt_received && running)
 	{
 		std::thread InputThread(ActivateInputThread, rb);
-			um.FirstView(0, turqois);
+
+			int * running = new int;
+			*running = 1;
+
+			um.FirstView(0, turqois, running);
+
 		InputThread.join();
 
 	}

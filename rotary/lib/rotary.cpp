@@ -35,6 +35,12 @@ rotaryButton::~rotaryButton()
 }
 
 
+void rotaryButton::SetPressCallback(PressCallback callback)
+{
+	this->Pcb = callback;
+}
+
+
 void rotaryButton::automaticPosDetection(bool On)
 {
 	this->autoPos = On;
@@ -42,6 +48,9 @@ void rotaryButton::automaticPosDetection(bool On)
 	while(this->autoPos)
 	{
 		determinePos();
+
+		if(this->Pcb != nullptr && this->getSWval() != "0")
+			this->Pcb();
 	}
 }
 
