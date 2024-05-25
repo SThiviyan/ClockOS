@@ -49,9 +49,7 @@ int UIManager::FirstView(int pbackgroundindex, rgb_matrix::Color color, int* run
         std::thread AnimatedImage(ShowAnimatedImage, Backgrounds[backgroundindex], m, running);
                 while(true)
 		{
-
-			
-			DrawText(this->m, this->standardOSFont, 3, 30, color, NULL, getcurrentDateTime("%H:%M:%S").c_str());      
+			DrawText(this->m, this->standardOSFont, 3, 30, color, NULL, getcurrentDateTime("%H:%M:%S").c_str());  
 		}
 
         AnimatedImage.join();

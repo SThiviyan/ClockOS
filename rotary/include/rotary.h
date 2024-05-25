@@ -3,8 +3,8 @@
 #include <iostream>
 #include <string>
 #include "../../rotary/lib/GPIO.h"
+#include <functional>
 
-typedef void (*PressCallback)();
 
 class rotaryButton
 {
@@ -16,8 +16,10 @@ class rotaryButton
 	~rotaryButton();	
 
 	int getPosition();
+	void executecallbackfunc(); //undefined func
+
 	void automaticPosDetection(bool On);
-	void SetPressCallback(PressCallback callback);
+	void SetPressCallback(std::function<void ()> Callback);
 
 
 	private:
@@ -25,7 +27,7 @@ class rotaryButton
 	std::string getDTval();
 	std::string getSWval();
 
-	PressCallback Pcb;
+	std::function<void ()> callbackfunc;
 	
 	void determinePos();
 	bool autoPos;

@@ -1,5 +1,5 @@
-include <iostream>
-#include "../rotary/include/rotary.h"
+#include <iostream>
+#include "include/rotary.h"
 #include <unistd.h>
 #include <thread>
 
@@ -13,9 +13,23 @@ void startUI(rotaryButton* r)
 
 }
 
+
+void callback()
+{
+	std::cout << "Button pressed" << std::endl;
+}
+
+
+void callback2()
+{
+	std::cout << "Callback switched" << std::endl;
+}
+
+
 int main()
 {
-	rotaryButton* r = new rotaryButton("0", "5", "6");	
+	rotaryButton* r = new rotaryButton("26", "16", "6");	
+	r->SetPressCallback(callback);
 
 
 	std::thread t1(
@@ -23,12 +37,9 @@ int main()
 
 	while(true)
 	{
-		if(r->getPosition() > 20)
-        	{       
-                	std::cout << "Switch Menu" << std::endl;
-        	}
-
-		usleep(1000);
+		std::cout << r->getPosition() << std::endl;
+		
+		//usleep();
 	}
 	
 

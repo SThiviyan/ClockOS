@@ -1,5 +1,5 @@
 #include <iostream>
-#include "../../rotary/include/rotary.h"
+#include "../include/rotary.h"
 #include <unistd.h>
 
 
@@ -12,7 +12,7 @@ rotaryButton::rotaryButton(std::string CLKPIN, std::string DTPIN, std::string SW
 	
 	this->CLK = GPIO(this->CLKPIN);
 	this->DT = GPIO(this->DTPIN);
-	this->SW = GPIO(this->SW);
+	this->SW = GPIO(this->SWPIN);
 
 	this->CLK.gpioexport();
 	this->DT.gpioexport();
@@ -35,9 +35,9 @@ rotaryButton::~rotaryButton()
 }
 
 
-void rotaryButton::SetPressCallback(PressCallback callback)
+void rotaryButton::SetPressCallback(std::function<void ()> Callback)
 {
-	this->Pcb = callback;
+	this->callbackfunc = Callback;
 }
 
 
@@ -49,8 +49,8 @@ void rotaryButton::automaticPosDetection(bool On)
 	{
 		determinePos();
 
-		if(this->Pcb != nullptr && this->getSWval() != "0")
-			this->Pcb();
+		if(this->callbackfunc)
+			this->callbackfunc();
 	}
 }
 
@@ -114,6 +114,6 @@ std::string rotaryButton::getDTval()
 std::string rotaryButton::getSWval()
 {
 	std::string temp;
-	DT.getval(temp);
+	SW.getval(temp);
 	return temp;
 }

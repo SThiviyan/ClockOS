@@ -9,7 +9,7 @@
 GPIO::GPIO()
 {
 	
-	this->Num=4;
+	this->Num=21;
 }
 
 GPIO::GPIO(std::string pin)
@@ -90,7 +90,7 @@ int GPIO::getval(std::string& val)
 	std::string valpath = "/sys/class/gpio/gpio" + this->Num + "/value";    
         std::ifstream getval(valpath.c_str()); 
  
-        if(!getval) 
+       	if(!getval) 
         {                         
                 std::cout << "Error with getting Value for GPIO" << this->Num;    
                 return -1;

@@ -46,10 +46,11 @@ int main(int argc, char* argv[])
 	options.brightness = 100;
 	options.multiplexing = 0;
 	options.disable_hardware_pulsing = true;
+	options.panel-type="FM6126A";
 
 
 	RGBMatrix* matrix = RGBMatrix::CreateFromFlags(&argc, &argv, &options);
-	rotaryButton* rb = new rotaryButton("26", "21", "20");
+	rotaryButton* rb = new rotaryButton("26", "16", "6");
 	if(matrix == NULL)
 		return 0;
 
@@ -59,7 +60,7 @@ int main(int argc, char* argv[])
   	signal(SIGINT, InterruptHandler);
 	
 
-	rgb_matrix::Color turqois(0, 0, 0);
+	rgb_matrix::Color turqois(255, 255, 255);
 	
 	bool running = true;
 	while(!interrupt_received && running)
